@@ -53,7 +53,7 @@ func bib_map(bib *bibentry, key string , val string){
 }
 
 func create_bib_entry(content []string) *bibentry {
-    bib := &bibentry{}
+    var bib *bibentry = &bibentry{}
     for i := 0; i < len(content); i++ {
         l := strings.Split(content[i], " - ")
         if len(l) > 1 {     // this is a valid entry
