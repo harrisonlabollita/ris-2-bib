@@ -1,12 +1,12 @@
 package main
 
 import (
+    "github.com/harrisonlabollita/ris-2-bib"
     "fmt"
     "os"
     "log"
     "path/filepath"
     "flag"
-    "ris2bib/converter"
 )
 
 func main() {
