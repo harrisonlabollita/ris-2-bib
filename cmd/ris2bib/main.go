@@ -12,11 +12,11 @@ import (
 func main() {
     //define flag
     file_ptr := flag.String("file", ".", "filename of ris file")
-    // TODO: provide a directory path
-    //       ris2bib should be able to receive a directory path
-    //       instead of just filenames
-    // TODO: additional flag for controlling the name of bib file
-    //       produced?
+    // TODO(#1): provide a directory path
+    //           ris2bib should be able to receive a directory path
+    //           instead of just filenames
+    // TODO(#2): additional flag for controlling the name of bib file
+    //           produced?
     flag.Parse()
 
     FILE := *file_ptr
