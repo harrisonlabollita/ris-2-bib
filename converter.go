@@ -71,8 +71,12 @@ func ConvertRIS(filename string, filedata string){
     bib := create_bib_entry(contents)
 
     id := strings.Split(bib.authors[0], ",")[0]+bib.year+bib.title[:5]
-
-    BIB_FILE := strings.Split(filename, ".ris")[0]+".bib"
+    var BIB_FILE string; 
+    if strings.Contains(filename, ".ris") { 
+        BIB_FILE = strings.Split(filename, ".ris")[0]+".bib" 
+    } else { 
+        BIB_FILE = filename 
+    }
     fmt.Println("Creating file: ", BIB_FILE)
 
     out, err := os.Create(BIB_FILE)

@@ -15,11 +15,12 @@ func main() {
     // TODO(#1): provide a directory path
     //           ris2bib should be able to receive a directory path
     //           instead of just filenames
-    // TODO(#2): additional flag for controlling the name of bib file
-    //           produced?
+
+    outfile_name := flag.String("out", ".", "new filename of bib file")
     flag.Parse()
 
     FILE := *file_ptr
+    OUT_FILE := *outfile_name
     if FILE == "." {
         files, glob_err := filepath.Glob("*.ris")
         if glob_err != nil {
@@ -41,6 +42,10 @@ func main() {
         if err != nil {
             log.Fatal(err)
         }
-        ris2bib.ConvertRIS(FILE, string(data))
+        if OUT_FILE == "." {
+            ris2bib.ConvertRIS(FILE, string(data))
+        } else {
+            ris2bib.ConvertRIS(OUT_FILE, string(data))
+        }
     }
 }
