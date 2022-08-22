@@ -22,9 +22,20 @@ mv ris2bib /usr/local/bin
 
 
 ## Usage
-The executbale has two working modes. To provide the file that you would like to convert simply execute the command 
+
 ```bash
-ris2bib -file=name-of-file
+ris2bib -h
+
+Usage of ris2bib:
+  -file string
+        filename of ris file or directory path to ris file(s). (default ".")
+  -out string
+        new filename of bib file (default ".")
+```
+
+The executbale has two working modes. You can explicitly provide a file name to be converted or a directory path.
+```bash
+ris2bib -file=name-of-file/directory-path
 ```
 The CLI will keep the original file name, but change the file extenstion to ``*.bib``.
 
@@ -32,3 +43,5 @@ If you have many ``*.ris`` files in a directory you can convert all of them, by 
 ```bash
 ris2bib
 ```
+
+The name of the output file can be controlled with ``-out`` flag. Note that this only works on single file conversions.
