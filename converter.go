@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-type bibentry struct {
+type BibEntry struct {
 	bibtype string
 	id      string
 	authors []string
@@ -23,7 +23,7 @@ type bibentry struct {
 	doi     string
 }
 
-func bib_map(bib *bibentry, key string, val string) {
+func BibMap(bib *BibEntry, key string, val string) {
 	if key == "AU" {
 		bib.authors = append(bib.authors, val)
 	} else if key == "TI" {
@@ -51,13 +51,13 @@ func bib_map(bib *bibentry, key string, val string) {
 	}
 }
 
-func create_bib_entry(content []string) *bibentry {
-	var bib *bibentry = &bibentry{}
+func CreateBibEntry(content []string) *BibEntry {
+	var bib *BibEntry = &BibEntry{}
 	for i := 0; i < len(content); i++ {
 		l := strings.Split(content[i], " - ")
 		if len(l) > 1 { // this is a valid entry
 			key, val := strings.TrimSpace(l[0]), strings.TrimSpace(l[1])
-			bib_map(bib, key, val)
+			BibMap(bib, key, val)
 		}
 	}
 	return bib
@@ -66,7 +66,7 @@ func create_bib_entry(content []string) *bibentry {
 func ConvertRIS(filename string, filedata string) {
 	contents := strings.Split(filedata, "\n")
 
-	bib := create_bib_entry(contents)
+	bib := CreateBibEntry(contents)
 
 	id := strings.Split(bib.authors[0], ",")[0] + bib.year + bib.title[:5]
 	var BIB_FILE string
