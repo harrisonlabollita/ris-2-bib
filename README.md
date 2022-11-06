@@ -43,8 +43,7 @@ If you have many ``*.ris`` files in a directory you can convert all of them, by 
 ```bash
 ris2bib
 ```
-
+The name of the output file can be controlled with ``-out`` flag. Note that this only works on single file conversions.
 
 ## Contributing
 PRs and Issues are welcome! If you found this tool useful, please leave a star.
-The name of the output file can be controlled with ``-out`` flag. Note that this only works on single file conversions.
