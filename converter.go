@@ -7,9 +7,9 @@ import (
 	"strings"
 )
 
-type UnusedBibKey map[string]string
+type unused_bib_key map[string]string
 
-type BibEntry struct {
+type bib_entry struct {
 	bibtype string
 	id      string
 	authors []string
@@ -23,10 +23,10 @@ type BibEntry struct {
 	month   string
 	url     string
 	doi     string
-    unused []UnusedBibKey
+	unused  []unused_bib_key
 }
 
-func (bib *BibEntry) Bibmap(key string, val string) {
+func (bib *bib_entry) bib_map(key string, val string) {
 
 	if key == "AU" {
 		bib.authors = append(bib.authors, val)
@@ -53,66 +53,64 @@ func (bib *BibEntry) Bibmap(key string, val string) {
 	} else if key == "IS" {
 		bib.issue = val
 	} else {
-        bib.unused = append(bib.unused, UnusedBibKey{ "key" : key, "val" : val } )
-    }
+		bib.unused = append(bib.unused, unused_bib_key{"key": key, "val": val})
+	}
 }
 
-
-func (bib *BibEntry) CheckBibEntry() error {
-    if len(bib.title) < 4 {
-        return fmt.Errorf("Error: title is incorrect! Parsed title : "+bib.title)
-    }
-    return nil
+func (bib *bib_entry) check_bib_entry() error {
+	if len(bib.title) < 4 {
+		return fmt.Errorf("Error: title is incorrect! Parsed title : " + bib.title)
+	}
+	return nil
 }
 
-
-func (bib *BibEntry) OutputDebug() {
-    fmt.Println("unused information for debugging: ")
-    for i:=0; i < len(bib.unused); i++ {
-        fmt.Println(bib.unused[i]["key"]+ ":  "+bib.unused[i]["val"])
-    }
+func (bib *bib_entry) output_debug() {
+	fmt.Println("unused information for debugging: ")
+	for i := 0; i < len(bib.unused); i++ {
+		fmt.Println(bib.unused[i]["key"] + ":  " + bib.unused[i]["val"])
+	}
 }
 
-func CreateBibEntry(content []string) *BibEntry {
-	var bib *BibEntry = &BibEntry{}
+func create_bib_entry(content []string) *bib_entry {
+
+	var bib *bib_entry = &bib_entry{}
 
 	for i := 0; i < len(content); i++ {
-        var sep string = " - "
+		var sep string = " - "
 		l := strings.Split(content[i], sep)
 		if len(l) > 1 {
 			key, val := strings.TrimSpace(l[0]), strings.TrimSpace(l[1])
-			bib.Bibmap(key, val)
+			bib.bib_map(key, val)
 		}
 	}
 
 	return bib
 }
 
-
 func ConvertRIS(filename string, filedata string) {
 	contents := strings.Split(filedata, "\n")
 
-	bib := CreateBibEntry(contents)
+	bib := create_bib_entry(contents)
 
-    Ok := bib.CheckBibEntry()
-    if Ok != nil {
-        bib.OutputDebug()
-        log.Fatal(Ok)
-    }
+	Ok := bib.check_bib_entry()
+	if Ok != nil {
+		bib.output_debug()
+		log.Fatal(Ok)
+	}
 
 	id := strings.Split(bib.authors[0], ",")[0] + bib.year + bib.title[:5]
 
-	var BIB_FILE string
+	var bib_file string
 
 	if strings.Contains(filename, ".ris") {
-		BIB_FILE = strings.Split(filename, ".ris")[0] + ".bib"
+		bib_file = strings.Split(filename, ".ris")[0] + ".bib"
 	} else {
-		BIB_FILE = filename
+		bib_file = filename
 	}
 
-	fmt.Println("Creating file: ", BIB_FILE)
+	fmt.Println("Creating file: ", bib_file)
 
-	out, err := os.Create(BIB_FILE)
+	out, err := os.Create(bib_file)
 	if err != nil {
 		log.Fatal(err)
 	}
