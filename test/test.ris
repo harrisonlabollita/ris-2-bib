@@ -1,0 +1,15 @@
+TY  - JOUR
+AU  - Doe,   J.
+AU  - Smith, L.
+AU  - Jones, R.
+PY  - 2022
+DA  - 2022/01/01
+TI  - This is a title that will be parsed
+JO  - NoWhere
+SP  - 200
+EP  - 100
+VL  - 100
+IS  - 1000
+AB  - A test ris file that absolutely means nothing and has no meaning at all. This abstract absolutely has no meaning or contain any substantial content.
+SN  - 1476-4687
+UR  - https://github.com/harrisonlabollita/ris-2-bib
