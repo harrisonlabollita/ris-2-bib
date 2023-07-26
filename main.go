@@ -18,16 +18,15 @@ func IsDir(path string) bool {
 
 func main() {
 	FilePtr := flag.String("file", ".", "filename of ris file or directory path to ris file(s).")
-	OutFilePtr  := flag.String("out", ".", "new filename of bib file")
-    idPtr := flag.String("id", " ", "BibTeX article id")
+	OutFilePtr := flag.String("out", ".", "new filename of bib file")
+	idPtr := flag.String("id", " ", "BibTeX article id")
 
 	flag.Parse()
 
 	File := *FilePtr
 	OutFile := *OutFilePtr
-    id := *idPtr
-    fmt.Println("id = ", id)
-
+	id := *idPtr
+	fmt.Println("id = ", id)
 
 	if File == "." { // this is our current directory
 		files, glob_err := filepath.Glob("*.ris")
@@ -69,19 +68,19 @@ func main() {
 		}
 
 		if OutFile == "." {
-            if id != " " {
-                fmt.Println("using id", id)
-                Convert(File, string(data), string(id))
-            } else {
-                ConvertWithoutId(File, string(data))
-            }
+			if id != " " {
+				fmt.Println("using id", id)
+				Convert(File, string(data), string(id))
+			} else {
+				ConvertWithoutId(File, string(data))
+			}
 		} else {
-            if id !=  " " {
-                fmt.Println("using id", id)
-                Convert(OutFile, string(data), string(id))
-            } else {
-                ConvertWithoutId(OutFile, string(data))
-            }
+			if id != " " {
+				fmt.Println("using id", id)
+				Convert(OutFile, string(data), string(id))
+			} else {
+				ConvertWithoutId(OutFile, string(data))
+			}
 		}
 	}
 }

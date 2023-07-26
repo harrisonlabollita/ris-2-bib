@@ -95,9 +95,8 @@ func Convert(filename string, filedata string, id string) {
 		bib.outputDebug()
 		log.Fatal(Ok)
 	}
-    WriteToFile(bib, filename, id)
+	WriteToFile(bib, filename, id)
 }
-
 
 func ConvertWithoutId(filename string, filedata string) {
 
@@ -111,15 +110,14 @@ func ConvertWithoutId(filename string, filedata string) {
 		log.Fatal(Ok)
 	}
 
-    titleWords := strings.Split(bib.title, " ")
-    idx := 0
-    for len(titleWords[idx]) < 3 {
-        idx++
-    }
+	titleWords := strings.Split(bib.title, " ")
+	idx := 0
+	for len(titleWords[idx]) < 3 {
+		idx++
+	}
 	id := strings.Split(bib.authors[0], ",")[0] + bib.year + titleWords[idx]
-    WriteToFile(bib, filename, id)
+	WriteToFile(bib, filename, id)
 }
-
 
 func WriteToFile(bib *bibEntry, filename string, id string) {
 	var bibFile string
