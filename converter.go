@@ -1,4 +1,4 @@
-package ris2bib
+package main
 
 import (
 	"fmt"
@@ -7,9 +7,9 @@ import (
 	"strings"
 )
 
-type unused_bib_key map[string]string
+type unusedBibKey map[string]string
 
-type bib_entry struct {
+type bibEntry struct {
 	bibtype string
 	id      string
 	authors []string
@@ -23,94 +23,95 @@ type bib_entry struct {
 	month   string
 	url     string
 	doi     string
-	unused  []unused_bib_key
+	unused  []unusedBibKey
 }
 
-func (bib *bib_entry) bib_map(key string, val string) {
+func (b *bibEntry) bibMap(key, val string) {
 
 	if key == "AU" {
-		bib.authors = append(bib.authors, val)
+		b.authors = append(b.authors, val)
 	} else if key == "TI" {
-		bib.title = val
+		b.title = val
 	} else if key == "JO" {
-		bib.journal = val
+		b.journal = val
 	} else if key == "UR" {
-		bib.url = val
+		b.url = val
 	} else if key == "DO" {
-		bib.doi = val
+		b.doi = val
 	} else if key == "VL" {
-		bib.volume = val
+		b.volume = val
 	} else if key == "ID" {
-		bib.id = val
+		b.id = val
 	} else if key == "TY" {
-		bib.bibtype = val
+		b.bibtype = val
 	} else if key == "PY" {
-		bib.year = val
+		b.year = val
 	} else if key == "SP" {
-		bib.startpg = val
+		b.startpg = val
 	} else if key == "EP" {
-		bib.endpg = val
+		b.endpg = val
 	} else if key == "IS" {
-		bib.issue = val
+		b.issue = val
 	} else {
-		bib.unused = append(bib.unused, unused_bib_key{"key": key, "val": val})
+		b.unused = append(b.unused, unusedBibKey{"key": key, "val": val})
 	}
 }
 
-func (bib *bib_entry) check_bib_entry() error {
-	if len(bib.title) < 4 {
-		return fmt.Errorf("Error: title is incorrect! Parsed title : " + bib.title)
+func (b *bibEntry) checkBibEntry() error {
+	if len(b.title) < 4 {
+		return fmt.Errorf("Error: title is incorrect! Parsed title : " + b.title)
 	}
 	return nil
 }
 
-func (bib *bib_entry) output_debug() {
+func (b *bibEntry) outputDebug() {
 	fmt.Println("unused information for debugging: ")
-	for i := 0; i < len(bib.unused); i++ {
-		fmt.Println(bib.unused[i]["key"] + ":  " + bib.unused[i]["val"])
+	for i := 0; i < len(b.unused); i++ {
+		fmt.Println(b.unused[i]["key"] + ":  " + b.unused[i]["val"])
 	}
 }
 
-func create_bib_entry(content []string) *bib_entry {
+func createBibEntry(content []string) *bibEntry {
 
-	var bib *bib_entry = &bib_entry{}
+	var b *bibEntry = &bibEntry{}
 
 	for i := 0; i < len(content); i++ {
 		var sep string = " - "
 		l := strings.Split(content[i], sep)
 		if len(l) > 1 {
 			key, val := strings.TrimSpace(l[0]), strings.TrimSpace(l[1])
-			bib.bib_map(key, val)
+			b.bibMap(key, val)
 		}
 	}
 
-	return bib
+	return b
 }
 
-func ConvertRIS(filename string, filedata string) {
+func ConvertRisFile(filename string, filedata string) {
+
 	contents := strings.Split(filedata, "\n")
 
-	bib := create_bib_entry(contents)
+	bib := createBibEntry(contents)
 
-	Ok := bib.check_bib_entry()
+	Ok := bib.checkBibEntry()
 	if Ok != nil {
-		bib.output_debug()
+		bib.outputDebug()
 		log.Fatal(Ok)
 	}
 
 	id := strings.Split(bib.authors[0], ",")[0] + bib.year + bib.title[:5]
 
-	var bib_file string
+	var bibFile string
 
 	if strings.Contains(filename, ".ris") {
-		bib_file = strings.Split(filename, ".ris")[0] + ".bib"
+		bibFile = strings.Split(filename, ".ris")[0] + ".bib"
 	} else {
-		bib_file = filename
+		bibFile = filename
 	}
 
-	fmt.Println("Creating file: ", bib_file)
+	fmt.Println("Creating file: ", bibFile)
 
-	out, err := os.Create(bib_file)
+	out, err := os.Create(bibFile)
 	if err != nil {
 		log.Fatal(err)
 	}

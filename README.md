@@ -9,11 +9,11 @@ go get github.com:harrisonlabollita/ris-2-bib.git
 ```
 From there you can build the exectuable. For an Intel Macs,
 ```bash
-GOOS=darwin GOARCH=amd64 go build -o ris2bib cmd/ris2bib/main.go
+GOOS=darwin GOARCH=amd64 go build -o ris2bib
 ```
 For amd/intel Linux, 
 ```bash
-GOOS=linux GOARCH=amd64 go build -o ris2bib cmd/ris2bib/main.go
+GOOS=linux GOARCH=amd64 go build -o ris2bib
 ```
 The exectuable ``ris2bib`` can then be moved to your bin folder. On Mac, this would be
 ```bash
