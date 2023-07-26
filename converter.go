@@ -87,7 +87,19 @@ func createBibEntry(content []string) *bibEntry {
 	return b
 }
 
-func ConvertRisFile(filename string, filedata string) {
+func Convert(filename string, filedata string, id string) {
+	contents := strings.Split(filedata, "\n")
+	bib := createBibEntry(contents)
+	Ok := bib.checkBibEntry()
+	if Ok != nil {
+		bib.outputDebug()
+		log.Fatal(Ok)
+	}
+    WriteToFile(bib, filename, id)
+}
+
+
+func ConvertWithoutId(filename string, filedata string) {
 
 	contents := strings.Split(filedata, "\n")
 
@@ -99,8 +111,17 @@ func ConvertRisFile(filename string, filedata string) {
 		log.Fatal(Ok)
 	}
 
-	id := strings.Split(bib.authors[0], ",")[0] + bib.year + bib.title[:5]
+    titleWords := strings.Split(bib.title, " ")
+    idx := 0
+    for len(titleWords[idx]) < 3 {
+        idx++
+    }
+	id := strings.Split(bib.authors[0], ",")[0] + bib.year + titleWords[idx]
+    WriteToFile(bib, filename, id)
+}
 
+
+func WriteToFile(bib *bibEntry, filename string, id string) {
 	var bibFile string
 
 	if strings.Contains(filename, ".ris") {
