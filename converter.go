@@ -115,7 +115,9 @@ func ConvertWithoutId(filename string, filedata string) {
 	for len(titleWords[idx]) < 3 {
 		idx++
 	}
-	id := strings.Split(bib.authors[0], ",")[0] + bib.year + titleWords[idx]
+
+    name := strings.Replace(strings.Split(bib.authors[0], ",")[0], " ", "", -1)
+	id := name + bib.year + titleWords[idx]
 	WriteToFile(bib, filename, id)
 }
 
@@ -138,14 +140,14 @@ func WriteToFile(bib *bibEntry, filename string, id string) {
 	defer out.Close()
 
 	out.WriteString("@article{" + id + ",\n")
-	out.WriteString("author = " + "\"" + strings.Join(bib.authors, "  and  ") + "\"" + ",\n")
-	out.WriteString("title = " + "\"" + bib.title + "\"" + ",\n")
-	out.WriteString("journal = " + "\"" + bib.journal + "\"" + ",\n")
-	out.WriteString("year  = " + "\"" + bib.year + "\"" + ",\n")
-	out.WriteString("volume  = " + "\"" + bib.volume + "\"" + ",\n")
-	out.WriteString("issue = " + "\"" + bib.issue + "\"" + ",\n")
-	out.WriteString("pages = " + "\"" + bib.startpg + "-" + bib.endpg + "\"" + ",\n")
-	out.WriteString("doi  = " + "\"" + bib.doi + "\"" + ",\n")
-	out.WriteString("url  = " + "\"" + bib.url + "\"\n")
+	out.WriteString("author = " + "{" + strings.Join(bib.authors, "  and  ") + "}" + ",\n")
+	out.WriteString("title = " + "{" + bib.title + "}" + ",\n")
+	out.WriteString("journal = " + "{" + bib.journal + "}" + ",\n")
+	out.WriteString("year  = " + "{" + bib.year + "}" + ",\n")
+	out.WriteString("volume  = " + "{" + bib.volume + "}" + ",\n")
+	out.WriteString("issue = " + "{" + bib.issue + "}" + ",\n")
+	out.WriteString("pages = " + "{" + bib.startpg + "-" + bib.endpg + "}" + ",\n")
+	out.WriteString("doi  = " + "{" + bib.doi + "}" + ",\n")
+	out.WriteString("url  = " + "{" + bib.url + "}\n")
 	out.WriteString("}")
 }
