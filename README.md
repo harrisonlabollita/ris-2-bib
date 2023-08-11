@@ -1,13 +1,28 @@
 # ris-2-bib
 
-Convert RIS formatted citation files into BIB format from the command line.
+![GitHub](https://img.shields.io/github/license/harrisonlabollita/ris-2-bib)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/harrisonlabollita/ris-2-bib)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/harrisonlabollita/ris-2-bib/Build%20and%20Test)
 
-## Build
+A command-line tool to convert RIS formatted files to BibTeX format.
 
-```bash
-go get github.com:harrisonlabollita/ris-2-bib.git
+## Introduction
+
+The RIS to BibTeX Converter is a handy command-line utility that allows you to convert RIS formatted files to BibTeX format, making it easier to manage your bibliographic references. Whether you have a single file or a directory of RIS files, this tool simplifies the process.
+
+## Features
+- Convert RIS files to BibTeX format
+- Supports both single files and directories
+- Customizable output file names and BibTeX article IDs
+
+## Installation
+To use the RIS to BibTeX Converter, you'll need to have Go installed. If you haven't already, you can download and install Go from the [official website](https://golang.org/).
+
+Once you have Go installed, you can install the tool using the following command:
+
+```shell
+go get github.com/harrisonlabollita/ris-2-bib.git
 ```
-
 From there build the exectubale. You can use the ``Makefile``, but make sure the build is appropriate for your architecture.
 
 ## Example
@@ -75,4 +90,4 @@ ris2bib
 The name of the output file can be controlled with ``-out`` flag. Note that this only works on single file conversions.
 
 ## Contributing
-PRs and Issues are welcome! If you found this tool useful, please leave a star.
+Contributions are welcome! If you have any suggestions, bug reports, or feature requests, please open an issue or a pull request in this repository.
