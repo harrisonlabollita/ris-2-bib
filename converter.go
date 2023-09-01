@@ -125,7 +125,7 @@ func WriteToFile(bib *bibEntry, filename string, id string) {
 	var bibFile string
 
 	if strings.Contains(filename, ".ris") {
-		bibFile = strings.Split(filename, ".ris")[0] + ".bib"
+		bibFile = id + ".bib" // strings.Split(filename, ".ris")[0] + ".bib"
 	} else {
 		bibFile = filename
 	}
