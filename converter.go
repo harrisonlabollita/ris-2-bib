@@ -130,7 +130,7 @@ func WriteToFile(bib *bibEntry, filename string, id string) {
 		bibFile = filename
 	}
 
-	fmt.Println("Creating file: ", bibFile)
+	log.Println("Creating file: ", bibFile)
 
 	out, err := os.Create(bibFile)
 	if err != nil {
