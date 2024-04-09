@@ -30,7 +30,7 @@ func (b *bibEntry) bibMap(key, val string) {
 
 	if key == "AU" {
 		b.authors = append(b.authors, val)
-	} else if key == "TI" {
+	} else if (key == "TI" || key == "T1") {
 		b.title = val
 	} else if key == "JO" {
 		b.journal = val
