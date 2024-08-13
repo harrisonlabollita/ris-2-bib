@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-var fileData string = `TY  - JOUR
+var FileData string = `TY  - JOUR
             AU  - LastName1, FirstName1
             AU  - LastName2, FirstName2
             AU  - LastName3, FirstName3
@@ -23,9 +23,9 @@ var fileData string = `TY  - JOUR
             UR  - https://doi.org/10.0000/journal0000
             DO  - 10.0000/journal0000`
 
-var contents []string = strings.Split(fileData, "\n")
+var contents []string = strings.Split(FileData, "\n")
 
-var bib *bibEntry = createBibEntry(contents)
+var bib *BibEntry = CreateBibEntry(contents)
 
 func TestAuthors(t *testing.T) {
 	if len(bib.authors) != 4 { // 4 Authors;
@@ -44,7 +44,7 @@ func TestAuthors(t *testing.T) {
 }
 
 func TestCheck(t *testing.T) {
-	if bib.checkBibEntry() != nil {
+	if bib.CheckBibEntry() != nil {
 		t.Errorf("Error: bib did not pass check!")
 	}
 }
