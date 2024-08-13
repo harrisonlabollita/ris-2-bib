@@ -5,36 +5,34 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+  "strings"
 )
 
-func IsDir(path string) bool {
+func IsDir(path string) (bool, error) {
 	fileInfo, err := os.Stat(path)
 	if err != nil {
-		log.Fatal(err)
+		return false, err
 	}
-	return fileInfo.IsDir()
+	return fileInfo.IsDir(), nil
 }
 
-func ProcessFile(file string , OutFile string, id string) {
+func ProcessFile(file string , OutFile string, id string) error {
   log.Println("Processing file: ", file)
   data, err := os.ReadFile(file)
   if err != nil {
-    log.Fatal(err)
+    return err
   }
 
-  if id != " " {
+  if strings.TrimSpace(id) != "" {
     if OutFile == "." {
-      Convert(file, string(data), id)
-    } else {
-      Convert(OutFile, string(data), id)
+      return Convert(file, string(data), id)
     }
-  } else {
-    if OutFile == "." {
-      ConvertWithoutId(file, string(data))
-    } else {
-      ConvertWithoutId(OutFile, string(data))
-    }
+      return  Convert(OutFile, string(data), id)
+  } 
+  if OutFile == "." {
+    return  ConvertWithoutId(file, string(data))
   }
+  return  ConvertWithoutId(OutFile, string(data))
 }
 
 
@@ -45,29 +43,38 @@ func main() {
 
 	flag.Parse()
 
-	File := *FilePtr
+  files := []string{}
+
+	file    := *FilePtr
 	OutFile := *OutFilePtr
-	id := *IdPtr
+	id      := *IdPtr
 
-  var files []string
   var err error
-
-  if File == "." {
-    files, err = filepath.Glob("*.ris")
-  } else if IsDir(File) {
-    files, err = filepath.Glob(filepath.Join(File, "*.ris"))
-  } else {
-    ProcessFile(File, OutFile, id)
-    return 
-  }
-
+  isDir, err := IsDir(file)
   if err != nil {
     log.Fatal(err)
   }
 
-  log.Println("Found", len(files), ".ris files in ", File)
-  for _, file := range files {
-    ProcessFile(file, OutFile, id)
+  if isDir || file == "." {
+    files, err = filepath.Glob(filepath.Join(file, "*.ris"))
+    if err != nil {
+      log.Fatal(err)
+    }
+  } else {
+    files = append(files, file)
+  }
+
+  if len(files) == 0 {
+    log.Println("No .ris files found")
+    return 
+  }
+
+  log.Printf("Found %d .ris files in %s\n", len(files), file)
+
+  for _, f := range files {
+    if err := ProcessFile(f, OutFile, id); err != nil {
+      log.Printf("Failed to process file %s: %v", f, err)
+    }
   }
 }
 
