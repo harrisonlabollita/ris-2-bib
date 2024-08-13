@@ -8,75 +8,66 @@ import (
 )
 
 func IsDir(path string) bool {
-	fileInfo, info_err := os.Stat(path)
-	if info_err != nil {
-		log.Fatal(info_err)
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		log.Fatal(err)
 	}
 	return fileInfo.IsDir()
 }
 
+func ProcessFile(file string , OutFile string, id string) {
+  log.Println("Processing file: ", file)
+  data, err := os.ReadFile(file)
+  if err != nil {
+    log.Fatal(err)
+  }
+
+  if id != " " {
+    if OutFile == "." {
+      Convert(file, string(data), id)
+    } else {
+      Convert(OutFile, string(data), id)
+    }
+  } else {
+    if OutFile == "." {
+      ConvertWithoutId(file, string(data))
+    } else {
+      ConvertWithoutId(OutFile, string(data))
+    }
+  }
+}
+
+
 func main() {
-	FilePtr := flag.String("file", ".", "filename of ris file or directory path to ris file(s).")
+	FilePtr    := flag.String("file", ".", "filename of ris file or directory path to ris file(s).")
 	OutFilePtr := flag.String("out", ".", "new filename of bib file")
-	idPtr := flag.String("id", " ", "BibTeX article id")
+	IdPtr      := flag.String("id", " ", "BibTeX article id")
 
 	flag.Parse()
 
 	File := *FilePtr
 	OutFile := *OutFilePtr
-	id := *idPtr
+	id := *IdPtr
 
-	if File == "." { // this is our current directory
-		files, glob_err := filepath.Glob("*.ris")
-		if glob_err != nil {
-			log.Fatal(glob_err)
-		}
+  var files []string
+  var err error
 
-		wd, _ := os.Getwd()
-		log.Println("Found", len(files), "RIS files in", wd)
-		for f := 0; f < len(files); f++ {
-			log.Println("Processing file: ", files[f])
-			data, err := os.ReadFile(files[f])
-			if err != nil {
-				log.Fatal(err)
-			}
-			ConvertWithoutId(files[f], string(data))
-		}
+  if File == "." {
+    files, err = filepath.Glob("*.ris")
+  } else if IsDir(File) {
+    files, err = filepath.Glob(filepath.Join(File, "*.ris"))
+  } else {
+    ProcessFile(File, OutFile, id)
+    return 
+  }
 
-	} else if IsDir(File) {
-		files, glob_err := filepath.Glob(File + "/*.ris")
-		if glob_err != nil {
-			log.Fatal(glob_err)
-		}
-		log.Println("Found", len(files), ".ris files in", File)
-		for f := 0; f < len(files); f++ {
-			log.Println("Processing file: ", files[f])
-			data, err := os.ReadFile(files[f])
-			if err != nil {
-				log.Fatal(err)
-			}
-			ConvertWithoutId(files[f], string(data))
-		}
-	} else {
+  if err != nil {
+    log.Fatal(err)
+  }
 
-		log.Println("Processing file:", File)
-		data, err := os.ReadFile(File)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		if OutFile == "." {
-			if id != " " {
-				Convert(File, string(data), string(id))
-			} else {
-				ConvertWithoutId(File, string(data))
-			}
-		} else {
-			if id != " " {
-				Convert(OutFile, string(data), string(id))
-			} else {
-				ConvertWithoutId(OutFile, string(data))
-			}
-		}
-	}
+  log.Println("Found", len(files), ".ris files in ", File)
+  for _, file := range files {
+    ProcessFile(file, OutFile, id)
+  }
 }
+
