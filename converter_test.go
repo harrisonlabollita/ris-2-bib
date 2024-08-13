@@ -28,16 +28,14 @@ var contents []string = strings.Split(FileData, "\n")
 var bib *BibEntry = CreateBibEntry(contents)
 
 func TestAuthors(t *testing.T) {
-	if len(bib.authors) != 4 { // 4 Authors;
-		t.Errorf("Number of authors parsed %d, Number of authors expected %d", len(bib.authors), 4)
+	ExpectedAuthors := []string{"LastName1, FirstName1", "LastName2, FirstName2", "LastName3, FirstName3", "LastName4, FirstName4"}
+
+	if len(bib.authors) != len(ExpectedAuthors) {
+		t.Fatalf("Number of authors parsed %d, Number of authors expected %d", len(bib.authors), len(ExpectedAuthors))
 	}
-	authors := []string{"LastName1, FirstName1",
-		"LastName2, FirstName2",
-		"LastName3, FirstName3",
-		"LastName4, FirstName4"}
-	for i, a := range authors {
-		if a != bib.authors[i] {
-			t.Errorf("Author error: parsed %s, expected %s", bib.authors[i], a)
+	for i, expected := range ExpectedAuthors {
+    if bib.authors[i] != expected {
+      t.Errorf("Author mismatch at index %d: parsed %s, expected %s", i, bib.authors[i], expected)
 		}
 
 	}
