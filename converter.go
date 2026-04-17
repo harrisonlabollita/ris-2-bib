@@ -2,20 +2,25 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"os"
 	"strings"
 )
 
-
-type UnusedBibKey struct {
-  key string
-  val string
+var fieldMap = map[string]string{
+	"TI": "title",
+	"T1": "title",
+	"JO": "journal",
+	"UR": "url",
+	"DO": "doi",
+	"VL": "volume",
+	"TY": "bibtype",
+	"PY": "year",
+	"SP": "startpg",
+	"EP": "endpg",
+	"IS": "issue",
 }
 
 type BibEntry struct {
 	bibtype string
-	id      string
 	authors []string
 	title   string
 	journal string
@@ -24,120 +29,114 @@ type BibEntry struct {
 	issue   string
 	startpg string
 	endpg   string
-	month   string
 	url     string
 	doi     string
-	unused  []UnusedBibKey
+	unused  map[string]string
 }
 
 func (b *BibEntry) BibMap(key, val string) {
-  
-  FieldMap := map[string]*string {
-    "TI" : &b.title,
-    "T1" : &b.title,
-    "JO" : &b.journal,
-    "UR" : &b.url,
-    "DO" : &b.doi,
-    "VL" : &b.volume,
-    "ID" : &b.id,
-    "TY" : &b.bibtype,
-    "PY" : &b.year,
-    "SP" : &b.startpg,
-    "EP" : &b.endpg,
-    "IS" : &b.issue,
-  }
-
-  if key == "AU" {
-    b.authors = append(b.authors, val)
-  } else if field, found := FieldMap[key]; found { 
-    *field = val
-  } else {
-		b.unused = append(b.unused, UnusedBibKey{key, val})
-  }
+	if key == "AU" {
+		b.authors = append(b.authors, val)
+		return
+	}
+	switch key {
+	case "TI", "T1":
+		b.title = val
+	case "JO":
+		b.journal = val
+	case "UR":
+		b.url = val
+	case "DO":
+		b.doi = val
+	case "VL":
+		b.volume = val
+	case "TY":
+		b.bibtype = val
+	case "PY":
+		b.year = val
+	case "SP":
+		b.startpg = val
+	case "EP":
+		b.endpg = val
+	case "IS":
+		b.issue = val
+	default:
+		if b.unused == nil {
+			b.unused = make(map[string]string)
+		}
+		b.unused[key] = val
+	}
 }
 
 func (b *BibEntry) CheckBibEntry() error {
 	if len(b.title) < 4 {
-		return fmt.Errorf("Error: title is incorrect! Parsed title : " + b.title)
+		return fmt.Errorf("title is too short or missing: %q", b.title)
 	}
 	return nil
 }
 
 func (b *BibEntry) OutputDebug() {
-	fmt.Println("unused information for debugging: ")
-  for _, entry := range b.unused {
-    fmt.Printf("%s: %s\n", entry.key, entry.val)
-  }
+	fmt.Println("unused fields:")
+	for k, v := range b.unused {
+		fmt.Printf("  %s: %s\n", k, v)
+	}
 }
 
 func CreateBibEntry(content []string) *BibEntry {
-  b := &BibEntry{}
-  for _, line := range content {
-    parts := strings.SplitN(line, " - ", 2)
-    if len(parts) == 2 {
-      key, val := strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1])
+	b := &BibEntry{}
+	for _, line := range content {
+		parts := strings.SplitN(line, " - ", 2)
+		if len(parts) == 2 {
+			key, val := strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1])
 			b.BibMap(key, val)
-    }
-  }
+		}
+	}
 	return b
 }
 
-func Convert(filename string, filedata string, id string) error {
-	contents := strings.Split(filedata, "\n")
-	bib := CreateBibEntry(contents)
-  if err := bib.CheckBibEntry(); err != nil {
-		bib.OutputDebug()
-    return err
-	}
-	return WriteToFile(bib, filename, id)
+func FormatBibEntry(bib *BibEntry, id string) string {
+	var sb strings.Builder
+	sb.WriteString("@article{" + id + ",\n")
+	sb.WriteString("author = {" + strings.Join(bib.authors, "  and  ") + "},\n")
+	sb.WriteString("title = {" + bib.title + "},\n")
+	sb.WriteString("journal = {" + bib.journal + "},\n")
+	sb.WriteString("year  = {" + bib.year + "},\n")
+	sb.WriteString("volume  = {" + bib.volume + "},\n")
+	sb.WriteString("issue = {" + bib.issue + "},\n")
+	sb.WriteString("pages = {" + bib.startpg + "-" + bib.endpg + "},\n")
+	sb.WriteString("doi  = {" + bib.doi + "},\n")
+	sb.WriteString("url  = {" + bib.url + "}\n")
+	sb.WriteString("}")
+	return sb.String()
 }
 
-func ConvertWithoutId(filename string, filedata string) error {
+func Convert(filedata string, id string) (string, error) {
 	contents := strings.Split(filedata, "\n")
 	bib := CreateBibEntry(contents)
 	if err := bib.CheckBibEntry(); err != nil {
 		bib.OutputDebug()
-    return err
-  }
-
-	TitleWords := strings.Split(bib.title, " ")
-	idx := 0
-	for len(TitleWords[idx]) < 3 {
-		idx++
+		return "", err
 	}
-  name := strings.Replace(strings.Split(bib.authors[0], ",")[0], " ", "", -1)
-	id := name + bib.year + TitleWords[idx]
-	return WriteToFile(bib, filename, id)
+	return FormatBibEntry(bib, id), nil
 }
 
-func WriteToFile(bib *BibEntry, filename string, id string) error {
-	var BibFile string
-
-	if strings.Contains(filename, ".ris") {
-		BibFile = id + ".bib"
-	} else {
-		BibFile = filename
+func ConvertWithoutId(filename string, filedata string) (string, error) {
+	contents := strings.Split(filedata, "\n")
+	bib := CreateBibEntry(contents)
+	if err := bib.CheckBibEntry(); err != nil {
+		bib.OutputDebug()
+		return "", err
 	}
 
-	log.Println("Creating file: ", BibFile)
-
-	out, err := os.Create(BibFile)
-	if err != nil {
-    return err
+	titleWords := strings.Split(bib.title, " ")
+	idx := 0
+	for idx < len(titleWords) && len(titleWords[idx]) < 3 {
+		idx++
 	}
-	defer out.Close()
-
-	out.WriteString("@article{" + id + ",\n")
-	out.WriteString("author = " + "{" + strings.Join(bib.authors, "  and  ") + "}" + ",\n")
-	out.WriteString("title = " + "{" + bib.title + "}" + ",\n")
-	out.WriteString("journal = " + "{" + bib.journal + "}" + ",\n")
-	out.WriteString("year  = " + "{" + bib.year + "}" + ",\n")
-	out.WriteString("volume  = " + "{" + bib.volume + "}" + ",\n")
-	out.WriteString("issue = " + "{" + bib.issue + "}" + ",\n")
-	out.WriteString("pages = " + "{" + bib.startpg + "-" + bib.endpg + "}" + ",\n")
-	out.WriteString("doi  = " + "{" + bib.doi + "}" + ",\n")
-	out.WriteString("url  = " + "{" + bib.url + "}\n")
-	out.WriteString("}")
-
-  return err
+	if idx >= len(titleWords) {
+		idx = 0
+	}
+	name := strings.Replace(strings.Split(bib.authors[0], ",")[0], " ", "", -1)
+	id := name + bib.year + titleWords[idx]
+	return FormatBibEntry(bib, id), nil
 }
