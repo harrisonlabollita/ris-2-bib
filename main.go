@@ -39,19 +39,19 @@ func RunPager(files []string) {
 	defer term.Restore(fd, oldState)
 
 	idx := 0
-	total := len(files)
 	buf := make([]byte, 1)
 
-	for {
+	for len(files) > 0 {
+		total := len(files)
 		fmt.Print("\033[H\033[2J")
 		formatted, err := ProcessFile(files[idx], "")
 		if err != nil {
-			fmt.Printf("Error processing %s: %v\n", files[idx], err)
+			fmt.Printf("Error processing %s: %v\r\n", files[idx], err)
 		} else {
-			fmt.Printf("[%d/%d] %s\n\n", idx+1, total, filepath.Base(files[idx]))
-			fmt.Println(formatted)
+			fmt.Printf("[%d/%d] %s\r\n\r\n", idx+1, total, filepath.Base(files[idx]))
+			fmt.Println(strings.ReplaceAll(formatted, "\n", "\r\n"))
 		}
-		fmt.Print("\n-- (n/j) next  (p/k) prev  (q) quit --")
+		fmt.Print("\r\n-- (n/j) next  (p/k) prev  (d) delete  (q) quit --")
 
 		os.Stdin.Read(buf)
 		switch buf[0] {
@@ -63,8 +63,20 @@ func RunPager(files []string) {
 			if idx > 0 {
 				idx--
 			}
+		case 'd':
+			if err := os.Remove(files[idx]); err != nil {
+				fmt.Printf("\r\nFailed to delete %s: %v\r\n", files[idx], err)
+			}
+			files = append(files[:idx], files[idx+1:]...)
+			if idx >= len(files) {
+				idx = len(files) - 1
+			}
+			if len(files) == 0 {
+				fmt.Print("\r\n")
+				return
+			}
 		case 'q', 3: // 3 = Ctrl-C
-			fmt.Println()
+			fmt.Print("\r\n")
 			return
 		}
 	}
