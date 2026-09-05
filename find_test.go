@@ -178,14 +178,72 @@ func TestRenderFrame(t *testing.T) {
 	f.render(&sb)
 	out := sb.String()
 
-	// The prompt carries an ANSI reset between the marker and the query text.
+	// The query line carries an ANSI colour between the marker and the text.
 	if !strings.Contains(out, "❯") || !strings.Contains(out, "dmft") {
-		t.Error("prompt missing from frame")
+		t.Error("query line missing from frame")
 	}
 	if sel := f.selected(); sel == nil || !strings.Contains(out, sel.Key) {
 		t.Error("preview does not show the selected entry")
 	}
 	t.Log("\n" + strings.ReplaceAll(out, "\r\n", "\n"))
+}
+
+// A frame has to be exactly as tall as the terminal. One row too many scrolls
+// the top away; one too few leaves the previous frame's leftovers on screen.
+// With no matches this used to draw a whole extra list of blank rows.
+func TestFrameIsExactlyScreenHeight(t *testing.T) {
+	entries := playgroundEntries(t)
+	for _, tc := range []struct {
+		name          string
+		query         string
+		width, height int
+	}{
+		{"full list", "", 96, 30},
+		{"some matches", "dmft", 96, 30},
+		{"no matches", "zzzzzzzz", 96, 30},
+		{"one match", "wannier90", 96, 30},
+		{"long query", strings.Repeat("supercond", 20), 96, 30},
+		{"narrow", "dmft", 40, 24},
+		{"short", "dmft", 96, 10},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := newFinder(entries)
+			f.width, f.height = tc.width, tc.height
+			f.type_(tc.query)
+
+			var sb strings.Builder
+			f.render(&sb)
+			// Every row but the last ends in a newline; the last deliberately
+			// does not, so the terminal never scrolls.
+			if rows := strings.Count(sb.String(), "\r\n") + 1; rows != tc.height {
+				t.Errorf("frame is %d rows, want %d", rows, tc.height)
+			}
+		})
+	}
+}
+
+// The query belongs on the bottom row, where the eye already is.
+func TestQueryLineIsLastAndOrange(t *testing.T) {
+	f := newFinder(playgroundEntries(t))
+	f.width, f.height = 96, 30
+	f.type_("dmft")
+
+	var sb strings.Builder
+	f.render(&sb)
+	rows := strings.Split(strings.TrimSuffix(sb.String(), "\033[J"), "\r\n")
+
+	last := rows[len(rows)-1]
+	if !strings.Contains(last, "dmft") {
+		t.Errorf("query is not on the bottom row, got %q", last)
+	}
+	if !strings.Contains(last, ansiOrange) {
+		t.Errorf("query is not orange, got %q", last)
+	}
+	for _, row := range rows[:len(rows)-1] {
+		if strings.Contains(row, "❯") {
+			t.Errorf("a stray query marker is still above the frame: %q", row)
+		}
+	}
 }
 
 // BenchmarkFilter measures one keystroke against a library far larger than any

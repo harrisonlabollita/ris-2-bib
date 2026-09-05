@@ -21,6 +21,7 @@ const (
 	ansiYellow  = "\033[33m"
 	ansiGreen   = "\033[32m"
 	ansiMagenta = "\033[35m"
+	ansiOrange  = "\033[38;5;208m"
 )
 
 // candidate is one library entry prepared for matching. Each field is scored
@@ -229,7 +230,7 @@ func (f *finder) selected() *Entry {
 // listHeight splits the screen between the result list and the preview, giving
 // the list the smaller share unless there is little to preview.
 func (f *finder) listHeight() int {
-	avail := f.height - 3 // prompt plus two rules
+	avail := f.height - 2 // the rule and the query line
 	if avail < 4 {
 		avail = 4
 	}
@@ -240,8 +241,15 @@ func (f *finder) listHeight() int {
 	if h > len(f.matches) {
 		h = len(f.matches)
 	}
+	// One row is drawn even with nothing to show, so "no matches" has
+	// somewhere to go.
 	if h < 1 {
 		h = 1
+	}
+	// On a short terminal the list still has to leave the rule and the query
+	// line their rows, or the frame runs off the bottom.
+	if ceiling := f.height - 2; ceiling >= 1 && h > ceiling {
+		h = ceiling
 	}
 	return h
 }
@@ -271,45 +279,69 @@ func (f *finder) render(w io.Writer) {
 
 	sb.WriteString("\033[H") // home, without the clear that causes flicker
 
-	count := fmt.Sprintf("%d/%d", len(f.matches), len(f.all))
-	prompt := ansiCyan + "❯ " + ansiReset + string(f.query) + ansiDim + "▏" + ansiReset
-	pad := f.width - 2 - len([]rune(f.query)) - 1 - len(count)
-	if pad < 1 {
-		pad = 1
-	}
-	line(&sb, prompt+strings.Repeat(" ", pad)+ansiDim+count+ansiReset)
-	line(&sb, ansiDim+strings.Repeat("─", f.width)+ansiReset)
-
-	if len(f.matches) == 0 {
-		line(&sb, "  "+ansiDim+"no matches"+ansiReset)
-		for i := 1; i < listH; i++ {
-			line(&sb, "")
-		}
-	}
 	for row := 0; row < listH; row++ {
 		i := f.offset + row
-		if i >= len(f.matches) {
+		switch {
+		case len(f.matches) == 0:
+			if row == 0 {
+				line(&sb, "  "+ansiDim+"no matches"+ansiReset)
+			} else {
+				line(&sb, "")
+			}
+		case i >= len(f.matches):
 			line(&sb, "")
-			continue
-		}
-		text := truncate(f.all[f.matches[i]].display, f.width-2)
-		if i == f.cursor {
-			line(&sb, ansiCyan+"▌ "+ansiReset+ansiBold+text+ansiReset)
-		} else {
-			line(&sb, "  "+ansiDim+text+ansiReset)
+		default:
+			text := truncate(f.all[f.matches[i]].display, f.width-2)
+			if i == f.cursor {
+				line(&sb, ansiCyan+"▌ "+ansiReset+ansiBold+text+ansiReset)
+			} else {
+				line(&sb, "  "+ansiDim+text+ansiReset)
+			}
 		}
 	}
 
 	line(&sb, ansiDim+strings.Repeat("─", f.width)+ansiReset)
-	f.renderPreview(&sb, f.height-3-listH)
+	f.renderPreview(&sb, f.height-listH-2)
 
-	fmt.Fprint(&sb, "\033[J") // drop anything left below the frame
+	// The query sits on the bottom row and is written without a trailing
+	// newline: one more would scroll the whole frame off the top.
+	sb.WriteString(f.queryLine())
+	sb.WriteString("\033[J") // drop anything the last frame left below
 	io.WriteString(w, sb.String())
 }
 
+// queryLine renders the bottom row: what you have typed, on the left, with the
+// match count on the right.
+func (f *finder) queryLine() string {
+	count := fmt.Sprintf("%d/%d", len(f.matches), len(f.all))
+
+	// Truncate rather than let a long query wrap. A wrapped line would push
+	// every row up by one and tear the frame.
+	room := f.width - 2 - len(count) - 2
+	if room < 1 {
+		room = 1
+	}
+	query := truncate(string(f.query), room)
+
+	pad := f.width - 2 - len([]rune(query)) - len(count) - 1
+	if pad < 1 {
+		pad = 1
+	}
+	return ansiOrange + "❯ " + query + ansiReset +
+		strings.Repeat(" ", pad) + ansiDim + count + ansiReset
+}
+
 func (f *finder) renderPreview(sb *strings.Builder, rows int) {
+	if rows <= 0 {
+		return
+	}
+	// With nothing selected the pane still has to occupy its rows, or the
+	// query line rides up the screen.
 	e := f.selected()
-	if e == nil || rows <= 0 {
+	if e == nil {
+		for ; rows > 0; rows-- {
+			line(sb, "")
+		}
 		return
 	}
 	fields, width := e.OrderedFields()

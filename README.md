@@ -47,8 +47,6 @@ Run `shelf` with no arguments and type. The list narrows as you go, and the entr
 under the cursor is previewed in full underneath.
 
 ```
-❯ dmft                                                                    7/26
-──────────────────────────────────────────────────────────────────────────────
   Fictitious             2021  Charge self-consistency in DFT+DMFT for laye…
 ▌ Pavarini               2011  The LDA+DMFT Approach
   Kotliar et al.         2006  Electronic structure calculations with dynam…
@@ -60,7 +58,12 @@ under the cursor is previewed in full underneath.
   booktitle = The LDA+DMFT approach to strongly correlated materials
   year      = 2011
 }
+
+❯ dmft                                                                    7/26
 ```
+
+What you have typed sits on the bottom row, in orange, with the match count
+opposite it.
 
 `↑`/`↓` or `ctrl-p`/`ctrl-n` to move, `ctrl-w` to delete a word, `ctrl-u` to
 clear, enter to select, escape to quit.
