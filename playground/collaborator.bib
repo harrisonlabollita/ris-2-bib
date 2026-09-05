@@ -1,0 +1,37 @@
+% A .bib from a collaborator, with the quirks real ones have.
+@string{prb = "Physical Review B"}
+@string{rmp = "Reviews of Modern Physics"}
+
+% Same paper as Marzari2012Maximally, but the DOI arrives in URL form and the
+% cite key is different. Should be recognised as a duplicate.
+@article{marzari_wannier_review,
+  author  = {Marzari, N. and Mostofi, A. A. and Yates, J. R. and Souza, I. and Vanderbilt, D.},
+  title   = {Maximally localized {W}annier functions},
+  journal = rmp,
+  volume  = {84},
+  pages   = {1419},
+  year    = {2012},
+  doi     = {https://doi.org/10.1103/RevModPhys.84.1419},
+}
+
+% This key already exists in the library, but it is a different paper, so it
+% has to be added under a suffixed key rather than overwriting anything.
+@article{Haule2007Quantum,
+  author  = {Haule, Kristjan and Kotliar, Gabriel},
+  title   = {Coherence-incoherence crossover in the normal state of iron oxypnictides},
+  journal = prb,
+  volume  = {80},
+  pages   = {224531},
+  year    = {2009},
+  doi     = {10.1103/PhysRevB.80.224531},
+}
+
+@article{Georgescu2024Learning,
+  author  = {Georgescu, Alexandru B.},
+  title   = {Learning the exchange-correlation functional \& its limits},
+  journal = prb,
+  volume  = {110},
+  pages   = {155120},
+  year    = {2024},
+  doi     = {10.1103/PhysRevB.110.155120},
+}

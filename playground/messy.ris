@@ -1,0 +1,27 @@
+TY  - JOUR
+AU  - Messy, Morgan
+PY  - 2022
+TI  - Spin & charge order in a title the exporter
+      wrapped across two lines
+AB  - This abstract - unhelpfully - contains " - " and a stray { brace.
+T2  - Journal of Awkward Exports
+VL  - 12
+IS  - 3
+SP  - 100
+EP  - 100
+XY  - a tag with no BibTeX equivalent
+ZZ  - another one
+DO  - 10.9999/awkward.2022
+ER  - 
+
+TY  - JOUR
+AU  - Titleless, Terry
+PY  - 2020
+DO  - 10.9999/notitle
+ER  - 
+
+TY  - JOUR
+AU  - Unterminated, Uma
+PY  - 2019
+TI  - This record never closes with ER
+T2  - Journal of Missing Delimiters

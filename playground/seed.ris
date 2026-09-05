@@ -1,0 +1,370 @@
+TY  - JOUR
+AU  - Georges, Antoine
+AU  - Kotliar, Gabriel
+AU  - Krauth, Werner
+AU  - Rozenberg, Marcelo J.
+PY  - 1996
+TI  - Dynamical mean-field theory of strongly correlated fermion systems
+      and the limit of infinite dimensions
+T2  - Reviews of Modern Physics
+VL  - 68
+IS  - 1
+SP  - 13
+EP  - 125
+DO  - 10.1103/RevModPhys.68.13
+KW  - dynamical mean-field theory
+KW  - strongly correlated electrons
+ER  -
+
+TY  - JOUR
+AU  - Kotliar, Gabriel
+AU  - Savrasov, Sergej Y.
+AU  - Haule, Kristjan
+AU  - Oudovenko, Viktor S.
+AU  - Parcollet, Olivier
+AU  - Marianetti, Chris A.
+PY  - 2006
+TI  - Electronic structure calculations with dynamical mean-field theory
+T2  - Reviews of Modern Physics
+VL  - 78
+IS  - 3
+SP  - 865
+EP  - 951
+DO  - 10.1103/RevModPhys.78.865
+KW  - DFT+DMFT
+ER  -
+
+TY  - JOUR
+AU  - Metzner, Walter
+AU  - Vollhardt, Dieter
+PY  - 1989
+TI  - Correlated Lattice Fermions in d = infinity Dimensions
+T2  - Physical Review Letters
+VL  - 62
+IS  - 3
+SP  - 324
+EP  - 327
+DO  - 10.1103/PhysRevLett.62.324
+ER  -
+
+TY  - JOUR
+AU  - Hohenberg, Pierre
+AU  - Kohn, Walter
+PY  - 1964
+TI  - Inhomogeneous Electron Gas
+T2  - Physical Review
+VL  - 136
+SP  - B864
+EP  - B871
+DO  - 10.1103/PhysRev.136.B864
+ER  -
+
+TY  - JOUR
+AU  - Kohn, Walter
+AU  - Sham, Lu Jeu
+PY  - 1965
+TI  - Self-Consistent Equations Including Exchange and Correlation Effects
+T2  - Physical Review
+VL  - 140
+SP  - A1133
+EP  - A1138
+DO  - 10.1103/PhysRev.140.A1133
+ER  -
+
+TY  - JOUR
+AU  - Perdew, John P.
+AU  - Burke, Kieron
+AU  - Ernzerhof, Matthias
+PY  - 1996
+TI  - Generalized Gradient Approximation Made Simple
+T2  - Physical Review Letters
+VL  - 77
+IS  - 18
+SP  - 3865
+EP  - 3868
+DO  - 10.1103/PhysRevLett.77.3865
+KW  - density functional theory
+ER  -
+
+TY  - JOUR
+AU  - Blöchl, Peter E.
+PY  - 1994
+TI  - Projector augmented-wave method
+T2  - Physical Review B
+VL  - 50
+IS  - 24
+SP  - 17953
+EP  - 17979
+DO  - 10.1103/PhysRevB.50.17953
+ER  -
+
+TY  - JOUR
+AU  - Kresse, Georg
+AU  - Furthmüller, Jürgen
+PY  - 1996
+TI  - Efficient iterative schemes for ab initio total-energy calculations
+      using a plane-wave basis set
+T2  - Physical Review B
+VL  - 54
+IS  - 16
+SP  - 11169
+EP  - 11186
+DO  - 10.1103/PhysRevB.54.11169
+ER  -
+
+TY  - JOUR
+AU  - Monkhorst, Hendrik J.
+AU  - Pack, James D.
+PY  - 1976
+TI  - Special points for Brillouin-zone integrations
+T2  - Physical Review B
+VL  - 13
+IS  - 12
+SP  - 5188
+EP  - 5192
+DO  - 10.1103/PhysRevB.13.5188
+ER  -
+
+TY  - JOUR
+AU  - Marzari, Nicola
+AU  - Mostofi, Arash A.
+AU  - Yates, Jonathan R.
+AU  - Souza, Ivo
+AU  - Vanderbilt, David
+PY  - 2012
+TI  - Maximally localized Wannier functions: Theory and applications
+T2  - Reviews of Modern Physics
+VL  - 84
+IS  - 4
+SP  - 1419
+EP  - 1475
+DO  - 10.1103/RevModPhys.84.1419
+KW  - Wannier functions
+ER  -
+
+TY  - JOUR
+AU  - Gull, Emanuel
+AU  - Millis, Andrew J.
+AU  - Lichtenstein, Alexander I.
+AU  - Rubtsov, Alexey N.
+AU  - Troyer, Matthias
+AU  - Werner, Philipp
+PY  - 2011
+TI  - Continuous-time Monte Carlo methods for quantum impurity models
+T2  - Reviews of Modern Physics
+VL  - 83
+IS  - 2
+SP  - 349
+EP  - 404
+DO  - 10.1103/RevModPhys.83.349
+KW  - quantum Monte Carlo
+ER  -
+
+TY  - JOUR
+AU  - Werner, Philipp
+AU  - Comanac, Armin
+AU  - de' Medici, Luca
+AU  - Troyer, Matthias
+AU  - Millis, Andrew J.
+PY  - 2006
+TI  - Continuous-Time Solver for Quantum Impurity Models
+T2  - Physical Review Letters
+VL  - 97
+IS  - 7
+SP  - 076405
+DO  - 10.1103/PhysRevLett.97.076405
+ER  -
+
+TY  - JOUR
+AU  - Haule, Kristjan
+PY  - 2007
+TI  - Quantum Monte Carlo impurity solver for cluster dynamical mean-field
+      theory and electronic structure calculations with adjustable cluster base
+T2  - Physical Review B
+VL  - 75
+IS  - 15
+SP  - 155113
+DO  - 10.1103/PhysRevB.75.155113
+ER  -
+
+TY  - JOUR
+AU  - Anisimov, Vladimir I.
+AU  - Zaanen, Jan
+AU  - Andersen, Ole K.
+PY  - 1991
+TI  - Band theory and Mott insulators: Hubbard U instead of Stoner I
+T2  - Physical Review B
+VL  - 44
+IS  - 3
+SP  - 943
+EP  - 954
+DO  - 10.1103/PhysRevB.44.943
+ER  -
+
+TY  - JOUR
+AU  - Bednorz, J. Georg
+AU  - Müller, K. Alex
+PY  - 1986
+TI  - Possible high Tc superconductivity in the Ba-La-Cu-O system
+T2  - Zeitschrift für Physik B Condensed Matter
+VL  - 64
+IS  - 2
+SP  - 189
+EP  - 193
+DO  - 10.1007/BF01303701
+KW  - superconductivity
+ER  -
+
+TY  - JOUR
+AU  - Li, Danfeng
+AU  - Lee, Kyuho
+AU  - Wang, Bai Yang
+AU  - Osada, Motoki
+AU  - Crossley, Samuel
+AU  - Lee, Hye Ryoung
+AU  - Cui, Yi
+AU  - Hikita, Yasuyuki
+AU  - Hwang, Harold Y.
+PY  - 2019
+TI  - Superconductivity in an infinite-layer nickelate
+T2  - Nature
+VL  - 572
+SP  - 624
+EP  - 627
+DO  - 10.1038/s41586-019-1496-5
+KW  - nickelates
+KW  - superconductivity
+ER  -
+
+TY  - JOUR
+AU  - Sun, Hualei
+AU  - Huo, Mengwu
+AU  - Hu, Xunwu
+AU  - Li, Jingyuan
+AU  - Liu, Zengjia
+AU  - Han, Yifeng
+AU  - Tang, Lingyun
+AU  - Mao, Zhongquan
+AU  - Yang, Pengtao
+AU  - Wang, Bosen
+PY  - 2023
+TI  - Signatures of superconductivity near 80 K in a nickelate under high pressure
+T2  - Nature
+VL  - 621
+SP  - 493
+EP  - 498
+DO  - 10.1038/s41586-023-06408-7
+KW  - nickelates
+ER  -
+
+TY  - JOUR
+AU  - Parcollet, Olivier
+AU  - Ferrero, Michel
+AU  - Ayral, Thomas
+AU  - Hafermann, Hartmut
+AU  - Krivenko, Igor
+AU  - Messio, Laura
+AU  - Seth, Priyanka
+PY  - 2015
+TI  - TRIQS: A toolbox for research on interacting quantum systems
+T2  - Computer Physics Communications
+VL  - 196
+SP  - 398
+EP  - 415
+DO  - 10.1016/j.cpc.2015.04.023
+KW  - software
+ER  -
+
+TY  - JOUR
+AU  - Aichhorn, Markus
+AU  - Pourovskii, Leonid
+AU  - Seth, Priyanka
+AU  - Vildosola, Veronica
+AU  - Zingl, Manuel
+AU  - Peil, Oleg E.
+AU  - Deng, Xiaoyu
+AU  - Mravlje, Jernej
+AU  - Kraberger, Gernot J.
+AU  - Martins, Cyril
+PY  - 2016
+TI  - TRIQS/DFTTools: A TRIQS application for ab initio calculations of
+      correlated materials
+T2  - Computer Physics Communications
+VL  - 204
+SP  - 200
+EP  - 208
+DO  - 10.1016/j.cpc.2016.03.014
+KW  - software
+ER  -
+
+TY  - JOUR
+AU  - Mostofi, Arash A.
+AU  - Yates, Jonathan R.
+AU  - Lee, Young-Su
+AU  - Souza, Ivo
+AU  - Vanderbilt, David
+AU  - Marzari, Nicola
+PY  - 2008
+TI  - wannier90: A tool for obtaining maximally-localised Wannier functions
+T2  - Computer Physics Communications
+VL  - 178
+IS  - 9
+SP  - 685
+EP  - 699
+DO  - 10.1016/j.cpc.2007.11.016
+KW  - software
+ER  -
+
+TY  - BOOK
+AU  - Ashcroft, Neil W.
+AU  - Mermin, N. David
+PY  - 1976
+TI  - Solid State Physics
+PB  - Holt, Rinehart and Winston
+CY  - New York
+SN  - 978-0-03-083993-1
+ER  -
+
+TY  - BOOK
+AU  - Coleman, Piers
+PY  - 2015
+TI  - Introduction to Many-Body Physics
+PB  - Cambridge University Press
+CY  - Cambridge
+SN  - 978-0-521-86488-6
+ER  -
+
+TY  - CHAP
+AU  - Pavarini, Eva
+A2  - Koch, Erik
+A2  - Vollhardt, Dieter
+A2  - Lichtenstein, Alexander
+PY  - 2011
+TI  - The LDA+DMFT Approach
+T2  - The LDA+DMFT approach to strongly correlated materials
+PB  - Forschungszentrum Jülich
+CY  - Jülich
+SN  - 978-3-89336-734-4
+ER  -
+
+TY  - THES
+AU  - Fictitious, Fiona
+PY  - 2021
+TI  - Charge self-consistency in DFT+DMFT for layered nickelates
+PB  - Arizona State University
+ER  -
+
+TY  - RPRT
+AU  - Working Group, Benchmarking
+PY  - 2022
+TI  - Benchmarks & Best Practices for Quantum Impurity Solvers
+PB  - Flatiron Institute
+ER  -
+
+TY  - JOUR
+AU  - Notyet, Published
+AU  - Preprint, Percy
+PY  - 2024
+TI  - An unpublished preprint about Hund metals
+UR  - https://arxiv.org/abs/2401.09876
+ER  -
