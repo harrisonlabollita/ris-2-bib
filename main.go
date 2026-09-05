@@ -8,22 +8,22 @@ import (
 	"path/filepath"
 )
 
-const usage = `bib - a single-file bibliography on the command line
+const usage = `shelf - a single-file bibliography on the command line
 
 usage:
-  bib                                                search the library (same as: bib find)
-  bib find [-f key|cite|entry]                       search, print the selection
-  bib add [-to FILE] [-n] <file.ris|file.bib|->...   add references to the library
-  bib fmt [FILE]                                     rewrite a .bib in canonical form
-  bib convert <file.ris|->...                        convert to BibTeX on stdout
-  bib browse [DIR]                                   page through .ris files, deleting rejects
+  shelf                                                search the library (same as: shelf find)
+  shelf find [-f key|cite|entry]                       search, print the selection
+  shelf add [-to FILE] [-n] <file.ris|file.bib|->...   add references to the library
+  shelf fmt [FILE]                                     rewrite a .bib in canonical form
+  shelf convert <file.ris|->...                        convert to BibTeX on stdout
+  shelf browse [DIR]                                   page through .ris files, deleting rejects
 
-The library defaults to $BIB_FILE, else $XDG_DATA_HOME/bib/master.bib.
+The library defaults to $SHELF_FILE, else $XDG_DATA_HOME/shelf/master.bib.
 `
 
 func main() {
 	log.SetFlags(0)
-	log.SetPrefix("bib: ")
+	log.SetPrefix("shelf: ")
 
 	// Bare `bib` opens the picker: searching is what you do all day.
 	if len(os.Args) < 2 {
@@ -49,7 +49,7 @@ func main() {
 		fmt.Print(usage)
 		return
 	default:
-		fmt.Fprintf(os.Stderr, "bib: unknown command %q\n\n%s", os.Args[1], usage)
+		fmt.Fprintf(os.Stderr, "shelf: unknown command %q\n\n%s", os.Args[1], usage)
 		os.Exit(2)
 	}
 	if err != nil {
@@ -67,7 +67,7 @@ func readAll(paths []string) ([]*Entry, error) {
 			return nil, fmt.Errorf("%s: %w", path, err)
 		}
 		for _, w := range warnings {
-			fmt.Fprintf(os.Stderr, "bib: %s: %s\n", path, w)
+			fmt.Fprintf(os.Stderr, "shelf: %s: %s\n", path, w)
 		}
 		all = append(all, entries...)
 	}
@@ -107,7 +107,7 @@ func cmdAdd(argv []string) error {
 	}
 
 	if *dry {
-		fmt.Fprintf(os.Stderr, "bib: dry run, %s not written\n", path)
+		fmt.Fprintf(os.Stderr, "shelf: dry run, %s not written\n", path)
 		return nil
 	}
 	if len(added) == 0 {
@@ -116,7 +116,7 @@ func cmdAdd(argv []string) error {
 	if err := SaveLibrary(path, merged); err != nil {
 		return err
 	}
-	fmt.Fprintf(os.Stderr, "bib: %d added, %d duplicate, %d total in %s\n",
+	fmt.Fprintf(os.Stderr, "shelf: %d added, %d duplicate, %d total in %s\n",
 		len(added), len(skipped), len(merged), path)
 	return nil
 }
@@ -133,7 +133,7 @@ func cmdFind(argv []string) error {
 		return err
 	}
 	if len(entries) == 0 {
-		return fmt.Errorf("%s is empty; add something with `bib add`", path)
+		return fmt.Errorf("%s is empty; add something with `shelf add`", path)
 	}
 
 	chosen, err := RunFinder(entries)

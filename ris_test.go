@@ -170,7 +170,7 @@ func TestEscaping(t *testing.T) {
 	}
 }
 
-// Escaping happens once, at import. If it ran at write time instead, `bib fmt`
+// Escaping happens once, at import. If it ran at write time instead, `shelf fmt`
 // would turn \& into \\& on every run.
 func TestEscapeThenFormatIsStable(t *testing.T) {
 	e := mustParseRIS(t, "TY  - JOUR\nTI  - Ashcroft & Mermin\nER  - \n")[0]

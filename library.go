@@ -9,10 +9,10 @@ import (
 	"unicode"
 )
 
-// LibraryPath resolves the master bibliography: $BIB_FILE, else the XDG data
+// LibraryPath resolves the master bibliography: $SHELF_FILE, else the XDG data
 // directory.
 func LibraryPath() string {
-	if p := os.Getenv("BIB_FILE"); p != "" {
+	if p := os.Getenv("SHELF_FILE"); p != "" {
 		return p
 	}
 	dir := os.Getenv("XDG_DATA_HOME")
@@ -23,11 +23,11 @@ func LibraryPath() string {
 		}
 		dir = filepath.Join(home, ".local", "share")
 	}
-	return filepath.Join(dir, "bib", "master.bib")
+	return filepath.Join(dir, "shelf", "master.bib")
 }
 
 // LoadLibrary reads the master file. A missing file is an empty library, not an
-// error, so the first `bib add` works with no setup.
+// error, so the first `shelf add` works with no setup.
 func LoadLibrary(path string) ([]*Entry, error) {
 	data, err := os.ReadFile(path)
 	if os.IsNotExist(err) {
@@ -41,7 +41,7 @@ func LoadLibrary(path string) ([]*Entry, error) {
 		return nil, fmt.Errorf("%s: %w", path, err)
 	}
 	for _, w := range warnings {
-		fmt.Fprintf(os.Stderr, "bib: %s: %s\n", path, w)
+		fmt.Fprintf(os.Stderr, "shelf: %s: %s\n", path, w)
 	}
 	return entries, nil
 }
@@ -53,7 +53,7 @@ func SaveLibrary(path string, entries []*Entry) error {
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return err
 	}
-	tmp, err := os.CreateTemp(dir, ".bib-*")
+	tmp, err := os.CreateTemp(dir, ".shelf-*")
 	if err != nil {
 		return err
 	}

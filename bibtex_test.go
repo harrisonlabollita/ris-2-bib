@@ -93,7 +93,7 @@ func TestFormatFieldOrder(t *testing.T) {
 	}
 }
 
-// TestFormatIdempotent is the property that makes `bib fmt` safe to run in a
+// TestFormatIdempotent is the property that makes `shelf fmt` safe to run in a
 // pre-commit hook: formatting an already formatted library changes nothing.
 func TestFormatIdempotent(t *testing.T) {
 	src := `@article{b1, title={T1}, author={Doe, J.}, year=2020, doi={10.1/a}}

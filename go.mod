@@ -1,4 +1,4 @@
-module github.com/harrisonlabollita/ris-2-bib
+module github.com/harrisonlabollita/shelf
 
 go 1.25.0
 

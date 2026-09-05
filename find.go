@@ -406,7 +406,7 @@ func (f *finder) handle(buf []byte) action {
 // if the user quit.
 //
 // The interface is drawn on /dev/tty rather than stdout, so that the selection
-// can be piped: `bib | pbcopy` works.
+// can be piped: `shelf | pbcopy` works.
 func RunFinder(entries []*Entry) (*Entry, error) {
 	tty, err := os.OpenFile("/dev/tty", os.O_RDWR, 0)
 	if err != nil {
