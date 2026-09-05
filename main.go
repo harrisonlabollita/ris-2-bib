@@ -11,6 +11,8 @@ import (
 const usage = `bib - a single-file bibliography on the command line
 
 usage:
+  bib                                                search the library (same as: bib find)
+  bib find [-f key|cite|entry]                       search, print the selection
   bib add [-to FILE] [-n] <file.ris|file.bib|->...   add references to the library
   bib fmt [FILE]                                     rewrite a .bib in canonical form
   bib convert <file.ris|->...                        convert to BibTeX on stdout
@@ -23,13 +25,18 @@ func main() {
 	log.SetFlags(0)
 	log.SetPrefix("bib: ")
 
+	// Bare `bib` opens the picker: searching is what you do all day.
 	if len(os.Args) < 2 {
-		fmt.Fprint(os.Stderr, usage)
-		os.Exit(2)
+		if err := cmdFind(nil); err != nil {
+			log.Fatal(err)
+		}
+		return
 	}
 
 	var err error
 	switch os.Args[1] {
+	case "find":
+		err = cmdFind(os.Args[2:])
 	case "add":
 		err = cmdAdd(os.Args[2:])
 	case "fmt":
@@ -111,6 +118,42 @@ func cmdAdd(argv []string) error {
 	}
 	fmt.Fprintf(os.Stderr, "bib: %d added, %d duplicate, %d total in %s\n",
 		len(added), len(skipped), len(merged), path)
+	return nil
+}
+
+func cmdFind(argv []string) error {
+	fs := flag.NewFlagSet("find", flag.ExitOnError)
+	format := fs.String("f", "key", "what to print on selection: key, cite, or entry")
+	if err := fs.Parse(argv); err != nil {
+		return err
+	}
+	path := LibraryPath()
+	entries, err := LoadLibrary(path)
+	if err != nil {
+		return err
+	}
+	if len(entries) == 0 {
+		return fmt.Errorf("%s is empty; add something with `bib add`", path)
+	}
+
+	chosen, err := RunFinder(entries)
+	if err != nil {
+		return err
+	}
+	if chosen == nil {
+		os.Exit(130) // quit without choosing
+	}
+
+	switch *format {
+	case "key":
+		fmt.Println(chosen.Key)
+	case "cite":
+		fmt.Printf("\\cite{%s}\n", chosen.Key)
+	case "entry":
+		fmt.Print(chosen.String())
+	default:
+		return fmt.Errorf("unknown -f value %q: want key, cite, or entry", *format)
+	}
 	return nil
 }
 
