@@ -6,120 +6,187 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
-
-	"golang.org/x/term"
 )
 
-func IsDir(path string) (bool, error) {
-	fileInfo, err := os.Stat(path)
-	if err != nil {
-		return false, err
-	}
-	return fileInfo.IsDir(), nil
-}
+const usage = `bib - a single-file bibliography on the command line
 
-func ProcessFile(file string, id string) (string, error) {
-	data, err := os.ReadFile(file)
-	if err != nil {
-		return "", err
-	}
-	if strings.TrimSpace(id) != "" {
-		return Convert(string(data), id)
-	}
-	return ConvertWithoutId(file, string(data))
-}
+usage:
+  bib add [-to FILE] [-n] <file.ris|file.bib|->...   add references to the library
+  bib fmt [FILE]                                     rewrite a .bib in canonical form
+  bib convert <file.ris|->...                        convert to BibTeX on stdout
+  bib browse [DIR]                                   page through .ris files, deleting rejects
 
-func RunPager(files []string) {
-	fd := int(os.Stdin.Fd())
-	oldState, err := term.MakeRaw(fd)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer term.Restore(fd, oldState)
-
-	idx := 0
-	buf := make([]byte, 1)
-
-	for len(files) > 0 {
-		total := len(files)
-		fmt.Print("\033[H\033[2J")
-		formatted, err := ProcessFile(files[idx], "")
-		if err != nil {
-			fmt.Printf("Error processing %s: %v\r\n", files[idx], err)
-		} else {
-			fmt.Printf("[%d/%d] %s\r\n\r\n", idx+1, total, filepath.Base(files[idx]))
-			fmt.Println(strings.ReplaceAll(formatted, "\n", "\r\n"))
-		}
-		fmt.Print("\r\n-- (n/j) next  (p/k) prev  (d) delete  (q) quit --")
-
-		os.Stdin.Read(buf)
-		switch buf[0] {
-		case 'n', 'j':
-			if idx < total-1 {
-				idx++
-			}
-		case 'p', 'k':
-			if idx > 0 {
-				idx--
-			}
-		case 'd':
-			if err := os.Remove(files[idx]); err != nil {
-				fmt.Printf("\r\nFailed to delete %s: %v\r\n", files[idx], err)
-			}
-			files = append(files[:idx], files[idx+1:]...)
-			if idx >= len(files) {
-				idx = len(files) - 1
-			}
-			if len(files) == 0 {
-				fmt.Print("\r\n")
-				return
-			}
-		case 'q', 3: // 3 = Ctrl-C
-			fmt.Print("\r\n")
-			return
-		}
-	}
-}
+The library defaults to $BIB_FILE, else $XDG_DATA_HOME/bib/master.bib.
+`
 
 func main() {
-	FilePtr := flag.String("file", ".", "filename of ris file or directory path to ris file(s).")
-	IdPtr   := flag.String("id", "", "BibTeX article id (single file only)")
+	log.SetFlags(0)
+	log.SetPrefix("bib: ")
 
-	flag.Parse()
-
-	file := *FilePtr
-	id   := *IdPtr
+	if len(os.Args) < 2 {
+		fmt.Fprint(os.Stderr, usage)
+		os.Exit(2)
+	}
 
 	var err error
-	var files []string
-
-	isDir, err := IsDir(file)
+	switch os.Args[1] {
+	case "add":
+		err = cmdAdd(os.Args[2:])
+	case "fmt":
+		err = cmdFmt(os.Args[2:])
+	case "convert":
+		err = cmdConvert(os.Args[2:])
+	case "browse":
+		err = cmdBrowse(os.Args[2:])
+	case "help", "-h", "--help":
+		fmt.Print(usage)
+		return
+	default:
+		fmt.Fprintf(os.Stderr, "bib: unknown command %q\n\n%s", os.Args[1], usage)
+		os.Exit(2)
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
+}
 
-	if isDir || file == "." {
-		files, err = filepath.Glob(filepath.Join(file, "*.ris"))
+// readAll loads every named source, reporting parse warnings to stderr but
+// continuing, so one malformed file does not sink a batch.
+func readAll(paths []string) ([]*Entry, error) {
+	var all []*Entry
+	for _, path := range paths {
+		entries, warnings, err := ReadSource(path)
 		if err != nil {
-			log.Fatal(err)
+			return nil, fmt.Errorf("%s: %w", path, err)
 		}
-	} else {
-		files = append(files, file)
+		for _, w := range warnings {
+			fmt.Fprintf(os.Stderr, "bib: %s: %s\n", path, w)
+		}
+		all = append(all, entries...)
+	}
+	return all, nil
+}
+
+func cmdAdd(argv []string) error {
+	fs := flag.NewFlagSet("add", flag.ExitOnError)
+	to := fs.String("to", "", "library file to add to (default: the master library)")
+	dry := fs.Bool("n", false, "print what would be added without writing")
+	if err := fs.Parse(argv); err != nil {
+		return err
+	}
+	if fs.NArg() == 0 {
+		return fmt.Errorf("add: no input files")
 	}
 
+	path := *to
+	if path == "" {
+		path = LibraryPath()
+	}
+	lib, err := LoadLibrary(path)
+	if err != nil {
+		return err
+	}
+	incoming, err := readAll(fs.Args())
+	if err != nil {
+		return err
+	}
+
+	merged, added, skipped := AddEntries(lib, incoming)
+	for _, e := range added {
+		fmt.Printf("+ %s\n", e.Key)
+	}
+	for _, e := range skipped {
+		fmt.Printf("= %s (already in library)\n", firstLine(e))
+	}
+
+	if *dry {
+		fmt.Fprintf(os.Stderr, "bib: dry run, %s not written\n", path)
+		return nil
+	}
+	if len(added) == 0 {
+		return nil
+	}
+	if err := SaveLibrary(path, merged); err != nil {
+		return err
+	}
+	fmt.Fprintf(os.Stderr, "bib: %d added, %d duplicate, %d total in %s\n",
+		len(added), len(skipped), len(merged), path)
+	return nil
+}
+
+func cmdFmt(argv []string) error {
+	fs := flag.NewFlagSet("fmt", flag.ExitOnError)
+	if err := fs.Parse(argv); err != nil {
+		return err
+	}
+	path := LibraryPath()
+	if fs.NArg() > 0 {
+		path = fs.Arg(0)
+	}
+	entries, err := LoadLibrary(path)
+	if err != nil {
+		return err
+	}
+	if entries == nil {
+		return fmt.Errorf("%s: no entries", path)
+	}
+	return SaveLibrary(path, entries)
+}
+
+func cmdConvert(argv []string) error {
+	fs := flag.NewFlagSet("convert", flag.ExitOnError)
+	if err := fs.Parse(argv); err != nil {
+		return err
+	}
+	if fs.NArg() == 0 {
+		return fmt.Errorf("convert: no input files")
+	}
+	entries, err := readAll(fs.Args())
+	if err != nil {
+		return err
+	}
+	taken := map[string]bool{}
+	for _, e := range entries {
+		if e.Key == "" || taken[e.Key] {
+			e.Key = MakeKey(e, taken)
+		}
+		taken[e.Key] = true
+	}
+	fmt.Print(FormatLibrary(entries))
+	return nil
+}
+
+func cmdBrowse(argv []string) error {
+	fs := flag.NewFlagSet("browse", flag.ExitOnError)
+	if err := fs.Parse(argv); err != nil {
+		return err
+	}
+	dir := "."
+	if fs.NArg() > 0 {
+		dir = fs.Arg(0)
+	}
+	files, err := filepath.Glob(filepath.Join(dir, "*.ris"))
+	if err != nil {
+		return err
+	}
 	if len(files) == 0 {
-		log.Println("No .ris files found")
-		return
+		return fmt.Errorf("no .ris files in %s", dir)
 	}
+	RunPager(files)
+	return nil
+}
 
-	if len(files) == 1 {
-		formatted, err := ProcessFile(files[0], id)
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(formatted)
-	} else {
-		RunPager(files)
+// firstLine describes an entry compactly for duplicate reports, where the
+// incoming entry has no cite key of its own yet.
+func firstLine(e *Entry) string {
+	title := e.Get("title")
+	if len(title) > 60 {
+		title = title[:57] + "..."
 	}
+	author := firstAuthorLast(e.Get("author"))
+	if author == "" {
+		author = "?"
+	}
+	// Not %q: the value is LaTeX, and quoting it would re-escape the backslashes.
+	return fmt.Sprintf("%s %s \"%s\"", author, e.Get("year"), title)
 }
